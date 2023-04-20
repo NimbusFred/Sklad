@@ -13,13 +13,12 @@ public class MainFrame extends JFrame {
     private InventoryView inventoryView;
     private ShoppingCartView shoppingCartView;
 
-    public MainFrame() {
+    public MainFrame(Inventory inventory) {
         setTitle("Sklad a nákupní košík");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Inicializace modelů
-        Inventory inventory = new Inventory();
         ShoppingCart shoppingCart = new ShoppingCart();
 
         // Inicializace zobrazení

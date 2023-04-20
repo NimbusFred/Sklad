@@ -58,6 +58,11 @@ public class Inventory {
         items.sort(comparator);
     }
 
+    // Nastavení seznamu položek
+    public void setItems(List<Item> items) {
+        this.items = new ArrayList<>(items);
+    }
+
     // Filtrování podle kategorie
     public List<Item> filterByCategory(String category) {
         return items.stream()

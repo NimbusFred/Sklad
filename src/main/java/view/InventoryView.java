@@ -40,6 +40,8 @@ public class InventoryView extends JPanel {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+
+
     public void setItems(List<Item> items) {
         tableModel.setRowCount(0);
         for (Item item : items) {

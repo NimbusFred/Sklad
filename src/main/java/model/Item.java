@@ -6,6 +6,7 @@ public class Item {
         private int quantity;
         private String category;
 
+        public Item(){}
         public Item(String name, double price, int quantity, String category) {
             this.name = name;
             this.price = price;

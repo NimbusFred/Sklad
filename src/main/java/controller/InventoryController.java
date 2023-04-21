@@ -25,6 +25,7 @@ public class InventoryController {
         this.view = view;
         setupView();
         loadItemsFromFile("json");
+        deserializer.loadItemsToInventory(inventory);
     }
 
 

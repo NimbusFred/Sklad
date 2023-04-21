@@ -2,6 +2,7 @@ package util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.Inventory;
 import model.Item;
 
 import java.io.IOException;
@@ -26,6 +27,17 @@ public class Deserializer {
         } catch (IOException e) {
             System.out.println("Chyba při připojování k souboru: " + e.getMessage());
         }
+    }
+
+    public void loadItemsToInventory(Inventory inventory) {
+        ArrayList<Item> itemsFromFile = new ArrayList<>();
+        try {
+            itemsFromFile = deserializeFromJson();
+        } catch (IOException e) {
+            System.err.println("Nepodařilo se načíst data ze souboru: " + e.getMessage());
+        }
+
+        inventory.addItemsInOrder(itemsFromFile);
     }
 
     public ArrayList<Item> deserializeFromJson() throws IOException {

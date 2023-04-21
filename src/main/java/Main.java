@@ -19,18 +19,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        Path dataFolderPath = Paths.get("src/main/java/data");
-        if (!Files.exists(dataFolderPath)) {
-            try {
-                Files.createDirectories(dataFolderPath);
-            } catch (IOException e) {
-                System.err.println("Nepodařilo se vytvořit složku 'data': " + e.getMessage());
-                return;
-            }
-        }
-        Serializer serializer = new Serializer();
 
-        List<Item> items;
         Deserializer deserializer = new Deserializer();
         List<Item> itemsFromFile = new ArrayList<>();
         try {
@@ -40,9 +29,8 @@ public class Main {
         }
 
         Inventory inventory = new Inventory();
-        for (Item item : itemsFromFile) {
-            inventory.addItem(item);
-        }
+        inventory.addItemsInOrder(itemsFromFile);
+
 
         SwingUtilities.invokeLater(() -> {
             InventoryView inventoryView = new InventoryView();

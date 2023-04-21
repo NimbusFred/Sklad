@@ -33,6 +33,11 @@ public class Inventory {
         items.add(item);
     }
 
+    public void addItemsInOrder(List<Item> itemsFromFile) {
+        for (Item item : itemsFromFile) {
+            addItem(item);
+        }
+    }
     // Odebrání položky
     public void removeItem(Item item) {
         items.remove(item);

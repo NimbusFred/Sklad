@@ -14,17 +14,21 @@ public class Serializer {
 
     private String filePath;
 
-    public Serializer(String filePath) {
-        this.filePath = filePath;
+    public Serializer() {
+        this.filePath = "src/main/java/data/items.json";
+        try {
+            Path path = Paths.get(filePath);
+            if (Files.notExists(path)) {
+                Files.createFile(path);
+            }
+        } catch (IOException e) {
+            System.out.println("Chyba při připojování k souboru: " + e.getMessage());
+        }
     }
 
     public void serializeToJson(List<Item> items) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         String content = objectMapper.writeValueAsString(items);
-
-        // Přidáno: vytiskněte serializovaný obsah před zápisem do souboru
-        System.out.println("Serializovaný obsah: " + content);
-
         Path path = Paths.get(filePath);
         Files.writeString(path, content, StandardCharsets.UTF_8);
     }

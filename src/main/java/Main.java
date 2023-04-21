@@ -1,8 +1,13 @@
+import controller.InventoryController;
+import controller.ShoppingCartController;
 import model.Inventory;
 import model.Item;
+import model.ShoppingCart;
 import util.Deserializer;
 import util.Serializer;
+import view.InventoryView;
 import view.MainFrame;
+import view.ShoppingCartView;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -14,8 +19,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        // Zkontrolujte, zda složka "data" existuje, a pokud ne, vytvořte ji
-        Path dataFolderPath = Paths.get("data");
+        Path dataFolderPath = Paths.get("src/main/java/data");
         if (!Files.exists(dataFolderPath)) {
             try {
                 Files.createDirectories(dataFolderPath);
@@ -24,14 +28,10 @@ public class Main {
                 return;
             }
         }
+        Serializer serializer = new Serializer();
 
-        // Načtení položek ze souboru
-        String filePath = "data/items.json"; // Cesta k souboru, odkud načíst data
-        Serializer serializer = new Serializer(filePath);
         List<Item> items;
-
-        // Načtení položek ze souboru
-        Deserializer deserializer = new Deserializer(filePath);
+        Deserializer deserializer = new Deserializer();
         List<Item> itemsFromFile = new ArrayList<>();
         try {
             itemsFromFile = deserializer.deserializeFromJson();
@@ -39,15 +39,17 @@ public class Main {
             System.err.println("Nepodařilo se načíst data ze souboru: " + e.getMessage());
         }
 
-        // Přidání položek do Inventory
         Inventory inventory = new Inventory();
         for (Item item : itemsFromFile) {
             inventory.addItem(item);
-            System.out.println(item);
         }
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame mainFrame = new MainFrame(inventory); // Předání načtených položek do MainFrame
+            InventoryView inventoryView = new InventoryView();
+            ShoppingCartView shoppingCartView = new ShoppingCartView();
+            InventoryController inventoryController = new InventoryController(inventory, inventoryView);
+            ShoppingCartController shoppingCartController = new ShoppingCartController(new ShoppingCart(), inventory, shoppingCartView);
+            MainFrame mainFrame = new MainFrame(inventoryView, shoppingCartView);
             mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             mainFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
@@ -68,3 +70,4 @@ public class Main {
         });
     }
 }
+

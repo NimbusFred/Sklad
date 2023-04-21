@@ -1,31 +1,28 @@
 package view;
 
-import controller.InventoryController;
 import model.Item;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 public class InventoryView extends JPanel {
     private JTable table;
-    private DefaultTableModel tableModel;
+    private ItemTableModel tableModel;
     private JButton addButton;
     private JButton editButton;
     private JButton removeButton;
     private JComboBox<String> categoryFilter;
+    private List<Item> itemList;
 
     public InventoryView() {
         setLayout(new BorderLayout());
 
-        // Vytvoření tabulky
-        tableModel = new DefaultTableModel(new Object[]{"Název", "Cena", "Počet", "Kategorie"}, 0);
+        tableModel = new ItemTableModel();
         table = new JTable(tableModel);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // Vytvoření panelu s tlačítky
         JPanel buttonPanel = new JPanel();
         addButton = new JButton("Přidat");
         editButton = new JButton("Upravit");
@@ -40,13 +37,9 @@ public class InventoryView extends JPanel {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-
-
     public void setItems(List<Item> items) {
-        tableModel.setRowCount(0);
-        for (Item item : items) {
-            tableModel.addRow(new Object[]{item.getName(), item.getPrice(), item.getQuantity(), item.getCategory()});
-        }
+        tableModel.setItems(items);
+        this.itemList = items;
     }
 
     public void addCategoryFilter(String category) {
@@ -57,20 +50,20 @@ public class InventoryView extends JPanel {
         return (String) categoryFilter.getSelectedItem();
     }
 
-    public void updateTable() {
-        tableModel.fireTableDataChanged();
+    public void updateTable(List<Item> items) {
+        setItems(items);
     }
 
     public Item getSelectedItem() {
         int selectedIndex = table.getSelectedRow();
-        if (selectedIndex != -1) {
-            String name = (String) tableModel.getValueAt(selectedIndex, 0);
-            double price = (double) tableModel.getValueAt(selectedIndex, 1);
-            int quantity = (int) tableModel.getValueAt(selectedIndex, 2);
-            String category = (String) tableModel.getValueAt(selectedIndex, 3);
-            return new Item(name, price, quantity, category);
+        if (selectedIndex != -1 && itemList != null) {
+            return itemList.get(selectedIndex);
         }
         return null;
+    }
+
+    public void setAddButtonListener(ActionListener listener) {
+        addButton.addActionListener(listener);
     }
 
     public void setEditButtonListener(ActionListener listener) {
@@ -83,10 +76,6 @@ public class InventoryView extends JPanel {
 
     public void setCategoryFilterListener(ActionListener listener) {
         categoryFilter.addActionListener(listener);
-    }
-
-    public void setAddButtonListener(ActionListener listener) {
-        addButton.addActionListener(listener);
     }
 
 }

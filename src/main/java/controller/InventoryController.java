@@ -7,28 +7,31 @@ import util.Serializer;
 import view.InventoryView;
 import view.ItemDialog;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class InventoryController {
     private Inventory inventory;
     private InventoryView view;
 
-    public InventoryController(Inventory inventory, InventoryView inventoryView) {
-        this.inventory = inventory;
-    }
 
-    public void bindView(InventoryView view) {
+    public InventoryController(Inventory inventory, InventoryView view) {
+        Deserializer deserializer = new Deserializer();
+        this.inventory = inventory;
         this.view = view;
         setupView();
+        loadItemsFromFile("json");
     }
 
 
     private void setupView() {
         // Nastavení akčních listenerů pro tlačítka
+        view.setItems(inventory.getItems());
+        populateCategoryFilter();
         view.setAddButtonListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -78,27 +81,40 @@ public class InventoryController {
     public void addItem(String name, double price, int quantity, String category) {
         Item item = new Item(name, price, quantity, category);
         inventory.addItem(item);
-        view.updateTable();
+        saveItemsToFile("json");
+        view.updateTable(inventory.getItems());
+    }
+
+    private void populateCategoryFilter() {
+        Set<String> categories = new HashSet<>();
+        for (Item item : inventory.getItems()) {
+            categories.add(item.getCategory());
+        }
+        for (String category : categories) {
+            view.addCategoryFilter(category);
+        }
     }
 
     // Odebrání položky
     public void removeItem(Item item) {
         inventory.removeItem(item);
-        view.updateTable();
+        view.updateTable(inventory.getItems());
     }
+
 
     // Editace položky
     public void updateItem(Item oldItem, String name, double price, int quantity, String category) {
         Item newItem = new Item(name, price, quantity, category);
         inventory.updateItem(oldItem, newItem);
-        view.updateTable();
+        view.updateTable(inventory.getItems());
     }
 
+
     // Řazení položek podle sloupce
-    public void sortItems(String columnName, boolean ascending) {
+    /*public void sortItems(String columnName, boolean ascending) {
         inventory.sortItems(columnName, ascending);
         view.updateTable();
-    }
+    }*/
 
     // Filtrování podle kategorie
     public List<Item> filterByCategory(String category) {
@@ -110,8 +126,8 @@ public class InventoryController {
         return inventory.getItems();
     }
 
-    public void loadItemsFromFile(String filePath, String format) {
-        Deserializer deserializer = new Deserializer(filePath);
+    public void loadItemsFromFile(String format) {
+        Deserializer deserializer = new Deserializer();
         List<Item> items;
         try {
             if (format.equalsIgnoreCase("json")) {
@@ -122,14 +138,15 @@ public class InventoryController {
                 throw new IllegalArgumentException("Unsupported file format: " + format);
             }
             inventory.setItems(items);
-            view.updateTable();
+            view.updateTable(inventory.getItems());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void saveItemsToFile(String filePath, String format) {
-        Serializer serializer = new Serializer(filePath);
+
+    public void saveItemsToFile(String format) {
+        Serializer serializer = new Serializer();
         try {
             if (format.equalsIgnoreCase("json")) {
                 serializer.serializeToJson(inventory.getItems());

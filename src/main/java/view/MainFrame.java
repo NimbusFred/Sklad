@@ -13,25 +13,14 @@ public class MainFrame extends JFrame {
     private InventoryView inventoryView;
     private ShoppingCartView shoppingCartView;
 
-    public MainFrame(Inventory inventory) {
+    public MainFrame(InventoryView inventoryView, ShoppingCartView shoppingCartView) {
         setTitle("Sklad a nákupní košík");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Inicializace modelů
-        ShoppingCart shoppingCart = new ShoppingCart();
-
-        // Inicializace zobrazení
-        inventoryView = new InventoryView();
-        shoppingCartView = new ShoppingCartView();
-
-        // Inicializace controllerů
-        InventoryController inventoryController = new InventoryController(inventory, inventoryView);
-        ShoppingCartController shoppingCartController = new ShoppingCartController(shoppingCart, inventory, shoppingCartView);
-
-        // Propojení controllerů a zobrazení
-        inventoryController.bindView(inventoryView);
-        shoppingCartController.bindView(shoppingCartView);
+        // Přiřazení zobrazení
+        this.inventoryView = inventoryView;
+        this.shoppingCartView = shoppingCartView;
 
         // Přidání zobrazení do okna
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inventoryView, shoppingCartView);

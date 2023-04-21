@@ -9,20 +9,30 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Deserializer {
 
     private String filePath;
 
-    public Deserializer(String filePath) {
-        this.filePath = filePath;
+    public Deserializer() {
+        this.filePath = "src/main/java/data/items.json";
+        try {
+            Path path = Paths.get(filePath);
+            if (Files.notExists(path)) {
+                Files.createFile(path);
+            }
+        } catch (IOException e) {
+            System.out.println("Chyba při připojování k souboru: " + e.getMessage());
+        }
     }
 
-    public List<Item> deserializeFromJson() throws IOException {
+    public ArrayList<Item> deserializeFromJson() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Path path = Paths.get(filePath);
         String content = Files.readString(path, StandardCharsets.UTF_8);
-        return objectMapper.readValue(content, new TypeReference<List<Item>>() {});
+        return objectMapper.readValue(content, new TypeReference<ArrayList<Item>>() {});
     }
+
 }

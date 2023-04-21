@@ -12,10 +12,11 @@ public class ShoppingCartController {
     private Inventory inventory;
     private ShoppingCartView view;
 
-
-    public ShoppingCartController(ShoppingCart shoppingCart, Inventory inventory, ShoppingCartView shoppingCartView) {
+    public ShoppingCartController(ShoppingCart shoppingCart, Inventory inventory, ShoppingCartView view) {
         this.shoppingCart = shoppingCart;
         this.inventory = inventory;
+        this.view = view;
+        setupView();
     }
 
     // Přidání položky do nákupního košíku

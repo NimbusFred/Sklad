@@ -1,8 +1,13 @@
 package model;
 
+import util.Deserializer;
+import view.InventoryView;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Inventory {
@@ -11,6 +16,17 @@ public class Inventory {
     public Inventory() {
         items = new ArrayList<>();
     }
+
+
+    public Inventory(Deserializer deserializer) {
+        try {
+            items = deserializer.deserializeFromJson();
+        } catch (IOException e) {
+            System.out.println("Chyba při načítání položek: " + e.getMessage());
+            items = new ArrayList<>(); // Vytvořte prázdný seznam položek, pokud se vyskytne chyba
+        }
+    }
+
 
     // Přidání položky
     public void addItem(Item item) {
@@ -27,6 +43,13 @@ public class Inventory {
         int index = items.indexOf(oldItem);
         if (index != -1) {
             items.set(index, newItem);
+        }
+    }
+
+    // Výpis položek v ArrayListu
+    public void printItems() {
+        for (Item item : items) {
+            System.out.println(item);
         }
     }
 
@@ -101,5 +124,7 @@ public class Inventory {
             int newQuantity = Math.max(0, existingItem.getQuantity() - quantity);
             existingItem.setQuantity(newQuantity);
         }
+
     }
+
 }

@@ -7,9 +7,13 @@ import util.Serializer;
 import view.InventoryView;
 import view.ItemDialog;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,22 +21,23 @@ import java.util.Set;
 public class InventoryController {
     private Inventory inventory;
     private InventoryView view;
+    private boolean[] ascendingSort;
 
 
     public InventoryController(Inventory inventory, InventoryView view) {
         Deserializer deserializer = new Deserializer();
         this.inventory = inventory;
         this.view = view;
-        setupView();
+        ascendingSort = new boolean[view.getTable().getColumnCount()];
+        Arrays.fill(ascendingSort, true);
         loadItemsFromFile("json");
-        deserializer.loadItemsToInventory(inventory);
+        setupView();
     }
 
 
+
     private void setupView() {
-        // Nastavení akčních listenerů pro tlačítka
         view.setItems(inventory.getItems());
-        populateCategoryFilter();
         view.setAddButtonListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -54,6 +59,8 @@ public class InventoryController {
                     if (itemDialog.isConfirmed()) {
                         updateItem(oldItem, itemDialog.getItem().getName(), itemDialog.getItem().getPrice(), itemDialog.getItem().getQuantity(), itemDialog.getItem().getCategory());
                     }
+                } else {
+                    JOptionPane.showMessageDialog(view, "Vyberte položku, kterou chcete upravit.", "Chyba", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -64,6 +71,8 @@ public class InventoryController {
                 Item selectedItem = view.getSelectedItem();
                 if (selectedItem != null) {
                     removeItem(selectedItem);
+                } else {
+                    JOptionPane.showMessageDialog(view, "Vyberte položku, kterou chcete odebrat.", "Chyba", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -75,6 +84,20 @@ public class InventoryController {
                 view.setItems(filterByCategory(selectedCategory));
             }
         });
+
+        view.addMouseListenerToHeader(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int columnIndex = view.getSelectedColumn();
+                if (columnIndex != -1) {
+                    applySort(columnIndex, ascendingSort[columnIndex]);
+                    ascendingSort[columnIndex] = !ascendingSort[columnIndex];
+                } else {
+                    JOptionPane.showMessageDialog(view, "Vyberte alespon jednu hodnotu sloupce pro řazení.", "Chyba", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        populateCategoryFilter();
     }
 
 
@@ -85,6 +108,16 @@ public class InventoryController {
         saveItemsToFile("json");
         view.updateTable(inventory.getItems());
     }
+
+    private void applySort(int columnIndex, boolean ascending) {
+        if (columnIndex != -1) {
+            String columnName = view.getTable().getColumnName(columnIndex).toLowerCase();
+            inventory.sortItems(columnName, ascending);
+            view.updateTable(inventory.getItems());
+        }
+    }
+
+
 
     private void populateCategoryFilter() {
         Set<String> categories = new HashSet<>();
@@ -100,6 +133,7 @@ public class InventoryController {
     public void removeItem(Item item) {
         inventory.removeItem(item);
         view.updateTable(inventory.getItems());
+        saveItemsToFile("json");
     }
 
 
@@ -108,14 +142,9 @@ public class InventoryController {
         Item newItem = new Item(name, price, quantity, category);
         inventory.updateItem(oldItem, newItem);
         view.updateTable(inventory.getItems());
+        saveItemsToFile("json");
     }
 
-
-    // Řazení položek podle sloupce
-    /*public void sortItems(String columnName, boolean ascending) {
-        inventory.sortItems(columnName, ascending);
-        view.updateTable();
-    }*/
 
     // Filtrování podle kategorie
     public List<Item> filterByCategory(String category) {

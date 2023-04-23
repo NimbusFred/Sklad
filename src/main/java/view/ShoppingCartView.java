@@ -37,6 +37,7 @@ public class ShoppingCartView extends JPanel {
         totalLabel = new JLabel("Celková cena: 0");
         totalPanel.add(totalLabel);
         add(totalPanel, BorderLayout.SOUTH);
+
     }
 
     public void setCartItems(HashMap<Item, Integer> cartItems) {

@@ -25,11 +25,17 @@ public class MainFrame extends JFrame {
         // Přidání zobrazení do okna
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inventoryView, shoppingCartView);
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(400);
+
+        int windowWidth = 800; // Nastavená šířka okna
+        int dividerLocation = (int) (windowWidth * (2.0 / 3.0));
+        splitPane.setDividerLocation(dividerLocation);
+
+        splitPane.setResizeWeight(0.5);
+        splitPane.setContinuousLayout(true);
         add(splitPane, BorderLayout.CENTER);
 
         // Nastavení velikosti okna a zobrazení
-        setSize(800, 600);
+        setSize(windowWidth, 600);
         setLocationRelativeTo(null);
     }
 }

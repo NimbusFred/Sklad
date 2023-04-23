@@ -5,6 +5,7 @@ import model.Item;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.util.List;
 
 public class InventoryView extends JPanel {
@@ -35,6 +36,7 @@ public class InventoryView extends JPanel {
         buttonPanel.add(categoryFilter);
 
         add(buttonPanel, BorderLayout.SOUTH);
+        setMinimumSize(new Dimension(400, 600));
     }
 
     public void setItems(List<Item> items) {
@@ -52,6 +54,14 @@ public class InventoryView extends JPanel {
 
     public void updateTable(List<Item> items) {
         setItems(items);
+    }
+
+    public int getSelectedColumn() {
+        return table.getSelectedColumn();
+    }
+
+    public JTable getTable() {
+        return table;
     }
 
     public Item getSelectedItem() {
@@ -77,5 +87,10 @@ public class InventoryView extends JPanel {
     public void setCategoryFilterListener(ActionListener listener) {
         categoryFilter.addActionListener(listener);
     }
+
+    public void addMouseListenerToHeader(MouseAdapter adapter) {
+        table.getTableHeader().addMouseListener(adapter);
+    }
+
 
 }

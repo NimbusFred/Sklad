@@ -1,13 +1,11 @@
 package model;
 
 import util.Deserializer;
-import view.InventoryView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Inventory {
@@ -15,16 +13,6 @@ public class Inventory {
 
     public Inventory() {
         items = new ArrayList<>();
-    }
-
-
-    public Inventory(Deserializer deserializer) {
-        try {
-            items = deserializer.deserializeFromJson();
-        } catch (IOException e) {
-            System.out.println("Chyba při načítání položek: " + e.getMessage());
-            items = new ArrayList<>(); // Vytvořte prázdný seznam položek, pokud se vyskytne chyba
-        }
     }
 
 
@@ -51,13 +39,6 @@ public class Inventory {
         }
     }
 
-    // Výpis položek v ArrayListu
-    public void printItems() {
-        for (Item item : items) {
-            System.out.println(item);
-        }
-    }
-
     // Řazení položek podle sloupce
     public void sortItems(String columnName, boolean ascending) {
         Comparator<Item> comparator;
@@ -69,7 +50,7 @@ public class Inventory {
             case "cena":
                 comparator = Comparator.comparing(Item::getPrice);
                 break;
-            case "počet":
+            case "quantity":
                 comparator = Comparator.comparing(Item::getQuantity);
                 break;
             case "kategorie":
@@ -82,7 +63,6 @@ public class Inventory {
         if (!ascending) {
             comparator = comparator.reversed();
         }
-
         items.sort(comparator);
     }
 

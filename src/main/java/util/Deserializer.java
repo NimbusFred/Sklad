@@ -29,17 +29,6 @@ public class Deserializer {
         }
     }
 
-    public void loadItemsToInventory(Inventory inventory) {
-        ArrayList<Item> itemsFromFile = new ArrayList<>();
-        try {
-            itemsFromFile = deserializeFromJson();
-        } catch (IOException e) {
-            System.err.println("Nepodařilo se načíst data ze souboru: " + e.getMessage());
-        }
-
-        inventory.addItemsInOrder(itemsFromFile);
-    }
-
     public ArrayList<Item> deserializeFromJson() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Path path = Paths.get(filePath);

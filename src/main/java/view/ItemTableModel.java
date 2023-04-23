@@ -24,8 +24,20 @@ public class ItemTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return columnNames[column];
+        switch (column) {
+            case 0:
+                return "název";
+            case 1:
+                return "cena";
+            case 2:
+                return "quantity";
+            case 3:
+                return "kategorie";
+            default:
+                return null;
+        }
     }
+
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {

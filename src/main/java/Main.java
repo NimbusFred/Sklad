@@ -1,37 +1,16 @@
 import controller.InventoryController;
 import controller.ShoppingCartController;
 import model.Inventory;
-import model.Item;
 import model.ShoppingCart;
-import util.Deserializer;
-import util.Serializer;
 import view.InventoryView;
 import view.MainFrame;
 import view.ShoppingCartView;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-
-        Deserializer deserializer = new Deserializer();
-        List<Item> itemsFromFile = new ArrayList<>();
-        try {
-            itemsFromFile = deserializer.deserializeFromJson();
-        } catch (IOException e) {
-            System.err.println("Nepodařilo se načíst data ze souboru: " + e.getMessage());
-        }
-
         Inventory inventory = new Inventory();
-        inventory.addItemsInOrder(itemsFromFile);
-
-
         SwingUtilities.invokeLater(() -> {
             InventoryView inventoryView = new InventoryView();
             ShoppingCartView shoppingCartView = new ShoppingCartView();
@@ -58,4 +37,3 @@ public class Main {
         });
     }
 }
-

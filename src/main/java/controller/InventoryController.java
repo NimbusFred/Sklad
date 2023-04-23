@@ -8,24 +8,18 @@ import view.InventoryView;
 import view.ItemDialog;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class InventoryController {
-    private Inventory inventory;
-    private InventoryView view;
-    private boolean[] ascendingSort;
+    private final Inventory inventory;
+    private final InventoryView view;
+    private final boolean[] ascendingSort;
 
 
     public InventoryController(Inventory inventory, InventoryView view) {
-        Deserializer deserializer = new Deserializer();
         this.inventory = inventory;
         this.view = view;
         ascendingSort = new boolean[view.getTable().getColumnCount()];
@@ -38,51 +32,39 @@ public class InventoryController {
 
     private void setupView() {
         view.setItems(inventory.getItems());
-        view.setAddButtonListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ItemDialog itemDialog = new ItemDialog(null, "Přidat položku", new Item("", 0, 0, ""));
+        view.setAddButtonListener(e -> {
+            ItemDialog itemDialog = new ItemDialog(null, "Přidat položku", new Item("", 0, 0, ""));
+            itemDialog.setVisible(true);
+            if (itemDialog.isConfirmed()) {
+                addItem(itemDialog.getItem().getName(), itemDialog.getItem().getPrice(), itemDialog.getItem().getQuantity(), itemDialog.getItem().getCategory());
+            }
+        });
+
+        view.setEditButtonListener(e -> {
+            Item oldItem = view.getSelectedItem();
+            if (oldItem != null) {
+                ItemDialog itemDialog = new ItemDialog(null, "Upravit položku", oldItem);
                 itemDialog.setVisible(true);
                 if (itemDialog.isConfirmed()) {
-                    addItem(itemDialog.getItem().getName(), itemDialog.getItem().getPrice(), itemDialog.getItem().getQuantity(), itemDialog.getItem().getCategory());
+                    updateItem(oldItem, itemDialog.getItem().getName(), itemDialog.getItem().getPrice(), itemDialog.getItem().getQuantity(), itemDialog.getItem().getCategory());
                 }
+            } else {
+                JOptionPane.showMessageDialog(view, "Vyberte položku, kterou chcete upravit.", "Chyba", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        view.setEditButtonListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Item oldItem = view.getSelectedItem();
-                if (oldItem != null) {
-                    ItemDialog itemDialog = new ItemDialog(null, "Upravit položku", oldItem);
-                    itemDialog.setVisible(true);
-                    if (itemDialog.isConfirmed()) {
-                        updateItem(oldItem, itemDialog.getItem().getName(), itemDialog.getItem().getPrice(), itemDialog.getItem().getQuantity(), itemDialog.getItem().getCategory());
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(view, "Vyberte položku, kterou chcete upravit.", "Chyba", JOptionPane.ERROR_MESSAGE);
-                }
+        view.setRemoveButtonListener(e -> {
+            Item selectedItem = view.getSelectedItem();
+            if (selectedItem != null) {
+                removeItem(selectedItem);
+            } else {
+                JOptionPane.showMessageDialog(view, "Vyberte položku, kterou chcete odebrat.", "Chyba", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        view.setRemoveButtonListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Item selectedItem = view.getSelectedItem();
-                if (selectedItem != null) {
-                    removeItem(selectedItem);
-                } else {
-                    JOptionPane.showMessageDialog(view, "Vyberte položku, kterou chcete odebrat.", "Chyba", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        view.setCategoryFilterListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedCategory = view.getSelectedCategoryFilter();
-                view.setItems(filterByCategory(selectedCategory));
-            }
+        view.setCategoryFilterListener(e -> {
+            String selectedCategory = view.getSelectedCategoryFilter();
+            view.setItems(filterByCategory(selectedCategory));
         });
 
         view.addMouseListenerToHeader(new MouseAdapter() {
@@ -107,7 +89,21 @@ public class InventoryController {
         inventory.addItem(item);
         saveItemsToFile("json");
         view.updateTable(inventory.getItems());
+        updateCategoryFilter(); // Přidáno
     }
+
+
+
+
+    private void updateCategoryFilter() {
+        Set<String> categories = new HashSet<>();
+        categories.add("Nic nefiltruj");
+        for (Item item : inventory.getItems()) {
+            categories.add(item.getCategory());
+        }
+        view.setCategoryFilter(categories);
+    }
+
 
     private void applySort(int columnIndex, boolean ascending) {
         if (columnIndex != -1) {
@@ -120,21 +116,31 @@ public class InventoryController {
 
 
     private void populateCategoryFilter() {
-        Set<String> categories = new HashSet<>();
+        Set<String> categories = new TreeSet<>(); // Změna z HashSet na TreeSet pro seřazení kategorií
+        //Použil jsem TreeSet místo HashSet, protože potřebuji,
+        // aby kategorie byly seřazeny ve vzestupném pořadí a
+        // TreeSet automaticky udržuje prvky v seřazeném stavu.
         for (Item item : inventory.getItems()) {
             categories.add(item.getCategory());
         }
+
+        view.clearCategoryFilter(); // Vyčistí stávající filtrovací seznam
+        view.addCategoryFilter("Nic nefiltruj"); // Přidá možnost "Nic nefiltruj" na první místo
         for (String category : categories) {
-            view.addCategoryFilter(category);
+            view.addCategoryFilter(category); // Přidá ostatní kategorie
         }
+        view.setSelectedCategoryFilter("Nic nefiltruj"); // Nastaví "Nic nefiltruj" jako výchozí možnost
     }
+
 
     // Odebrání položky
     public void removeItem(Item item) {
         inventory.removeItem(item);
         view.updateTable(inventory.getItems());
         saveItemsToFile("json");
+        updateCategoryFilter(); // Přidáno
     }
+
 
 
     // Editace položky
@@ -143,18 +149,18 @@ public class InventoryController {
         inventory.updateItem(oldItem, newItem);
         view.updateTable(inventory.getItems());
         saveItemsToFile("json");
+        updateCategoryFilter(); // Přidáno
     }
 
 
     // Filtrování podle kategorie
     public List<Item> filterByCategory(String category) {
+        if (category == null || category.equalsIgnoreCase("Nic nefiltruj")) {
+            return inventory.getItems(); // vrátí všechny položky bez filtru
+        }
         return inventory.filterByCategory(category);
     }
 
-    // Získání všech položek
-    public List<Item> getItems() {
-        return inventory.getItems();
-    }
 
     public void loadItemsFromFile(String format) {
         Deserializer deserializer = new Deserializer();

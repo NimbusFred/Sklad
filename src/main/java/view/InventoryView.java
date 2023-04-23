@@ -7,14 +7,15 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.util.List;
+import java.util.Set;
 
 public class InventoryView extends JPanel {
-    private JTable table;
-    private ItemTableModel tableModel;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton removeButton;
-    private JComboBox<String> categoryFilter;
+    private final JTable table;
+    private final ItemTableModel tableModel;
+    private final JButton addButton;
+    private final JButton editButton;
+    private final JButton removeButton;
+    private final JComboBox<String> categoryFilter;
     private List<Item> itemList;
 
     public InventoryView() {
@@ -70,6 +71,34 @@ public class InventoryView extends JPanel {
             return itemList.get(selectedIndex);
         }
         return null;
+    }
+
+    public void clearCategoryFilter() {
+        categoryFilter.removeAllItems();
+        categoryFilter.addItem("Všechny");
+    }
+    public void enableItem(Item item) {
+        int rowIndex = itemList.indexOf(item);
+        if (rowIndex != -1) {
+            table.setEnabled(true);
+        }
+    }
+
+    public void disableItem(Item item) {
+        int rowIndex = itemList.indexOf(item);
+        if (rowIndex != -1) {
+            table.setEnabled(false);
+        }
+    }
+
+    public void setCategoryFilter(Set<String> categories) {
+        categoryFilter.removeAllItems();
+        for (String category : categories) {
+            categoryFilter.addItem(category);
+        }
+    }
+    public void setSelectedCategoryFilter(String category) {
+        categoryFilter.setSelectedItem(category);
     }
 
     public void setAddButtonListener(ActionListener listener) {

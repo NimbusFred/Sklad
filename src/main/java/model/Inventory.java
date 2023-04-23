@@ -1,8 +1,6 @@
 package model;
 
-import util.Deserializer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -21,11 +19,6 @@ public class Inventory {
         items.add(item);
     }
 
-    public void addItemsInOrder(List<Item> itemsFromFile) {
-        for (Item item : itemsFromFile) {
-            addItem(item);
-        }
-    }
     // Odebrání položky
     public void removeItem(Item item) {
         items.remove(item);
@@ -41,24 +34,13 @@ public class Inventory {
 
     // Řazení položek podle sloupce
     public void sortItems(String columnName, boolean ascending) {
-        Comparator<Item> comparator;
-
-        switch (columnName) {
-            case "název":
-                comparator = Comparator.comparing(Item::getName);
-                break;
-            case "cena":
-                comparator = Comparator.comparing(Item::getPrice);
-                break;
-            case "quantity":
-                comparator = Comparator.comparing(Item::getQuantity);
-                break;
-            case "kategorie":
-                comparator = Comparator.comparing(Item::getCategory);
-                break;
-            default:
-                throw new IllegalArgumentException("Neznámý název sloupce: " + columnName);
-        }
+        Comparator<Item> comparator = switch (columnName) {
+            case "název" -> Comparator.comparing(Item::getName);
+            case "cena" -> Comparator.comparing(Item::getPrice);
+            case "quantity" -> Comparator.comparing(Item::getQuantity);
+            case "kategorie" -> Comparator.comparing(Item::getCategory);
+            default -> throw new IllegalArgumentException("Neznámý název sloupce: " + columnName);
+        };
 
         if (!ascending) {
             comparator = comparator.reversed();
@@ -87,10 +69,13 @@ public class Inventory {
     public boolean isAvailable(Item item, int quantity) {
         int index = items.indexOf(item);
         if (index != -1) {
-            return items.get(index).getQuantity() >= quantity;
+            // Zkontroluje, zda je množství položky v inventáři větší nebo rovno požadovanému množství
+            // a zároveň větší než 1
+            return items.get(index).getQuantity() >= quantity && quantity > 1;
         }
         return false;
     }
+
 
     // Zvýšení množství položky
     public void increaseItemQuantity(Item item, int quantity) {

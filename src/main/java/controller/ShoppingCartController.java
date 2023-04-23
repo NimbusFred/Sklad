@@ -3,8 +3,12 @@ package controller;
 import model.Inventory;
 import model.Item;
 import model.ShoppingCart;
+import util.Serializer;
 import view.InventoryView;
 import view.ShoppingCartView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ShoppingCartController {
@@ -12,12 +16,15 @@ public class ShoppingCartController {
     private final Inventory inventory;
     private final ShoppingCartView view;
     private final InventoryView inventoryView;
+    private final Serializer serializer;
+
 
     public ShoppingCartController(ShoppingCart shoppingCart, Inventory inventory, ShoppingCartView view, InventoryView inventoryView) {
         this.shoppingCart = shoppingCart;
         this.inventory = inventory;
         this.view = view;
         this.inventoryView = inventoryView;
+        this.serializer = new Serializer();
         setupView();
     }
 
@@ -33,9 +40,10 @@ public class ShoppingCartController {
     private void setupView() {
         // Nastavení obsluhy událostí a aktualizace zobrazení
         view.setAddButtonListener(e -> {
+            System.out.println("mačkám!");
             Item selectedItem = inventoryView.getSelectedItem();
             if (selectedItem != null) {
-                addItemToCart(selectedItem, 1); // Přidává pouze jednu jednotku položky do košíku
+                addItemToCart(selectedItem, selectedItem.getQuantity()); // Přidává pouze položky s množstvím 1 nebo vyšším do košíku
                 view.setCartItems(shoppingCart.getCartItems());
                 view.setTotalPrice(shoppingCart.getTotalPrice());
             }
@@ -50,12 +58,28 @@ public class ShoppingCartController {
                 view.setTotalPrice(shoppingCart.getTotalPrice());
             }
         });
+
+        view.setSaveItemsButtonListener(e -> {
+            List<Item> items = new ArrayList<>(shoppingCart.getCartItems().keySet());
+            try {
+                serializer.serializeToJson(items);
+                // serializer.serializeToCsv(items); // pro uložení do CSV formátu
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
     }
 
+
     public void removeItemFromCart(Item item) {
-        int quantity = shoppingCart.getCartItems().get(item);
-        shoppingCart.removeItem(item);
-        inventory.increaseItemQuantity(item, quantity);
+        Integer quantity = shoppingCart.getCartItems().get(item);
+
+        if (quantity != null) {
+            shoppingCart.removeItem(item);
+            inventory.increaseItemQuantity(item, quantity);
+        }
     }
+
 
 }

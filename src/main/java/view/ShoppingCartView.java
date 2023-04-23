@@ -37,6 +37,7 @@ public class ShoppingCartView extends JPanel {
         totalLabel = new JLabel("Celková cena: 0");
         totalPanel.add(totalLabel);
         add(totalPanel, BorderLayout.SOUTH);
+        buttonPanel.add(saveItemsButton);
 
     }
 
@@ -67,5 +68,9 @@ public class ShoppingCartView extends JPanel {
 
     public void setRemoveButtonListener(ActionListener listener) {
         removeButton.addActionListener(listener);
+    }
+
+    public void setSaveItemsButtonListener(ActionListener listener) {
+        saveItemsButton.addActionListener(listener);
     }
 }

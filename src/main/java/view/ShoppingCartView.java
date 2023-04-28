@@ -15,6 +15,8 @@ public class ShoppingCartView extends JPanel {
     private final JButton addButton;
     private final JButton removeButton;
     private final JLabel totalLabel;
+    private final JButton saveInvoiceButton;
+
 
     public ShoppingCartView() {
         setLayout(new BorderLayout());
@@ -32,12 +34,16 @@ public class ShoppingCartView extends JPanel {
         buttonPanel.add(removeButton);
         add(buttonPanel, BorderLayout.NORTH);
 
-        // Vytvoření panelu s celkovou cenou
+        // Vytvoření panelu s celkovou cenou a tlačítkem pro uložení faktury
         JPanel totalPanel = new JPanel();
+        totalPanel.setLayout(new BorderLayout());
+        saveInvoiceButton = new JButton("Uložit fakturu");
+        totalPanel.add(saveInvoiceButton, BorderLayout.NORTH);
         totalLabel = new JLabel("Celková cena: 0");
-        totalPanel.add(totalLabel);
+        totalPanel.add(totalLabel, BorderLayout.CENTER);
         add(totalPanel, BorderLayout.SOUTH);
-        //buttonPanel.add(saveItemsButton);
+
+
 
     }
 
@@ -69,8 +75,8 @@ public class ShoppingCartView extends JPanel {
     public void setRemoveButtonListener(ActionListener listener) {
         removeButton.addActionListener(listener);
     }
+    public void setSaveInvoiceButtonListener(ActionListener listener) {
+        saveInvoiceButton.addActionListener(listener);
+    }
 
-    /*public void setSaveItemsButtonListener(ActionListener listener) {
-        saveItemsButton.addActionListener(listener);
-    }*/
 }

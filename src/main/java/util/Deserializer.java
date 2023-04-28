@@ -15,12 +15,11 @@ import java.util.List;
 public class Deserializer {
 
     private final String jsonFilePath;
-    private final String csvFilePath;
 
 
     public Deserializer() {
         this.jsonFilePath = "src/main/java/data/items.json";
-        this.csvFilePath = "src/main/java/data/items.csv";
+        String csvFilePath = "src/main/java/data/items.csv";
         try {
             Path jsonPath = Paths.get(jsonFilePath);
             if (Files.notExists(jsonPath)) {
@@ -66,7 +65,6 @@ public class Deserializer {
                 items.add(item);
             }
         }
-        System.out.println(items);
         return items;
     }
 

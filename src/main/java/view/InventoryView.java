@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ public class InventoryView extends JPanel {
 
         tableModel = new ItemTableModel();
         table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
@@ -73,6 +75,17 @@ public class InventoryView extends JPanel {
         return null;
     }
 
+    public List<Item> getSelectedItems() {
+        int[] selectedIndices = table.getSelectedRows();
+        List<Item> selectedItems = new ArrayList<>();
+        if (selectedIndices.length > 0 && itemList != null) {
+            for (int index : selectedIndices) {
+                selectedItems.add(itemList.get(index));
+            }
+        }
+        return selectedItems;
+    }
+
     public void clearCategoryFilter() {
         categoryFilter.removeAllItems();
         categoryFilter.addItem("Všechny");
@@ -81,13 +94,6 @@ public class InventoryView extends JPanel {
         int rowIndex = itemList.indexOf(item);
         if (rowIndex != -1) {
             table.setEnabled(true);
-        }
-    }
-
-    public void disableItem(Item item) {
-        int rowIndex = itemList.indexOf(item);
-        if (rowIndex != -1) {
-            table.setEnabled(false);
         }
     }
 

@@ -3,11 +3,12 @@ package controller;
 import model.Inventory;
 import model.Item;
 import model.ShoppingCart;
-import util.Serializer;
 import view.InventoryView;
 import view.ShoppingCartView;
 
 import javax.swing.*;
+import java.util.List;
+import java.util.Map;
 
 
 public class ShoppingCartController {
@@ -22,7 +23,6 @@ public class ShoppingCartController {
         this.inventory = inventory;
         this.view = view;
         this.inventoryView = inventoryView;
-        Serializer serializer = new Serializer();
         setupView();
     }
 
@@ -30,19 +30,16 @@ public class ShoppingCartController {
         if (inventory.isAvailable(item, quantity) && quantity > 0) {
             shoppingCart.addItem(item, quantity);
             inventory.reduceItemQuantity(item, quantity);
-            inventoryView.disableItem(item);
-            view.setCartItems(shoppingCart.getCartItems()); // Aktualizace množství položek v košíku
+            view.setCartItems(shoppingCart.getCartItems());
         }
     }
-
-
 
 
     private void setupView() {
         // Nastavení obsluhy událostí a aktualizace zobrazení
         view.setAddButtonListener(e -> {
-            Item selectedItem = inventoryView.getSelectedItem();
-            if (selectedItem != null) {
+            List<Item> selectedItems = inventoryView.getSelectedItems();
+            if (!selectedItems.isEmpty()) {
                 // Zde získejte množství, které chce uživatel přidat do košíku
                 String input = JOptionPane.showInputDialog(view, "Zadejte množství položek, které chcete přidat do košíku:", "Přidat množství", JOptionPane.PLAIN_MESSAGE);
 
@@ -52,7 +49,9 @@ public class ShoppingCartController {
                         if (quantityToAdd <= 0) {
                             JOptionPane.showMessageDialog(view, "Množství musí být kladné číslo.", "Chyba", JOptionPane.ERROR_MESSAGE);
                         } else {
-                            addItemToCart(selectedItem, quantityToAdd);
+                            for (Item selectedItem : selectedItems) {
+                                addItemToCart(selectedItem, quantityToAdd);
+                            }
                             view.setCartItems(shoppingCart.getCartItems());
                             view.setTotalPrice(shoppingCart.getTotalPrice());
                         }
@@ -105,9 +104,21 @@ public class ShoppingCartController {
                 ex.printStackTrace();
             }
         }); */
+        view.setSaveInvoiceButtonListener(e -> printInvoice());}
 
+    public void printInvoice() {
+        System.out.println("===== Faktura =====");
+        double totalPrice = 0;
+        for (Map.Entry<Item, Integer> entry : shoppingCart.getCartItems().entrySet()) {
+            Item item = entry.getKey();
+            int quantity = entry.getValue();
+            double itemTotalPrice = item.getPrice() * quantity;
+            totalPrice += itemTotalPrice;
+            System.out.println("Název: " + item.getName() + ", Počet kusů: " + quantity + ", Cena za kus: " + item.getPrice() + ", Celkem za položku: " + itemTotalPrice);
+        }
+        System.out.println("Celková cena: " + totalPrice);
+        System.out.println("===================");
     }
-
 
     public void removeItemFromCart(Item item, int quantityToRemove) {
         Integer quantity = shoppingCart.getCartItems().get(item);

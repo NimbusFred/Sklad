@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShoppingCartView extends JPanel {
-    private JTable table;
-    private DefaultTableModel tableModel;
-    private JButton addButton;
-    private JButton removeButton;
-    private JLabel totalLabel;
+    private final JTable table;
+    private final DefaultTableModel tableModel;
+    private final JButton addButton;
+    private final JButton removeButton;
+    private final JLabel totalLabel;
 
     public ShoppingCartView() {
         setLayout(new BorderLayout());
@@ -37,7 +37,7 @@ public class ShoppingCartView extends JPanel {
         totalLabel = new JLabel("Celková cena: 0");
         totalPanel.add(totalLabel);
         add(totalPanel, BorderLayout.SOUTH);
-        buttonPanel.add(saveItemsButton);
+        //buttonPanel.add(saveItemsButton);
 
     }
 
@@ -70,7 +70,7 @@ public class ShoppingCartView extends JPanel {
         removeButton.addActionListener(listener);
     }
 
-    public void setSaveItemsButtonListener(ActionListener listener) {
+    /*public void setSaveItemsButtonListener(ActionListener listener) {
         saveItemsButton.addActionListener(listener);
-    }
+    }*/
 }

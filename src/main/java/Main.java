@@ -1,30 +1,16 @@
-import controller.InventoryController;
-import controller.ShoppingCartController;
-import model.Inventory;
-import model.ShoppingCart;
-import view.InventoryView;
 import view.MainFrame;
-import view.ShoppingCartView;
 
 import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        Inventory inventory = new Inventory();
         SwingUtilities.invokeLater(() -> {
-            // Vytvoří nové objekty pro zobrazení inventáře (InventoryView) a nákupního košíku (ShoppingCartView)
-            InventoryView inventoryView = new InventoryView();
-            ShoppingCartView shoppingCartView = new ShoppingCartView();
+            // Vytvoření hlavního okna aplikace
+            MainFrame mainFrame = new MainFrame();
 
-            // Vytvoření nových řadičů (controllers) pro inventář a nákupní košík, které propojují model a zobrazení
-            // Bez ukládání do proměnných, protože v třídě Main nejsou potřeba
-            new InventoryController(inventory, inventoryView);
-            new ShoppingCartController(new ShoppingCart(), inventory, shoppingCartView, inventoryView);
-
-            // Vytvoření hlavního okna aplikace, které zobrazuje InventoryView a ShoppingCartView
-            MainFrame mainFrame = new MainFrame(inventoryView, shoppingCartView);
             // Nastavení, aby se aplikace neukončila automaticky po zavření hlavního okna
             mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
             // Přidání posluchače pro událost zavření hlavního okna
             mainFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
@@ -47,6 +33,4 @@ public class Main {
             mainFrame.setVisible(true);
         });
     }
-
-
 }

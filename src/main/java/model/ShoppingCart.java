@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShoppingCart {
-    private HashMap<Item, Integer> cartItems;
+    private final HashMap<Item, Integer> cartItems;
 
     public ShoppingCart() {
         cartItems = new HashMap<>();
@@ -15,19 +15,20 @@ public class ShoppingCart {
         cartItems.put(item, cartItems.getOrDefault(item, 0) + quantity);
     }
 
-    // Odebrání položky
-    public void removeItem(Item item) {
-        cartItems.remove(item);
-    }
-
-    // Změna množství položky
-    public void updateItemQuantity(Item item, int newQuantity) {
-        if (newQuantity > 0) {
-            cartItems.put(item, newQuantity);
-        } else {
-            cartItems.remove(item);
+    // Odebrání zadaného množství položek
+    public void removeItem(Item item, int quantityToRemove) {
+        Integer currentQuantity = cartItems.get(item);
+        if (currentQuantity != null) {
+            // Pokud je množství k odebrání menší než aktuální množství, aktualizujte množství
+            if (quantityToRemove < currentQuantity) {
+                cartItems.put(item, currentQuantity - quantityToRemove);
+            } else {
+                // V opačném případě položku z košíku úplně odeberte
+                cartItems.remove(item);
+            }
         }
     }
+
 
     // Získání celkové ceny nákupního košíku
     public double getTotalPrice() {

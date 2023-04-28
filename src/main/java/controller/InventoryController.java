@@ -18,17 +18,28 @@ public class InventoryController {
     private final InventoryView view;
     private final boolean[] ascendingSort;
 
-
     public InventoryController(Inventory inventory, InventoryView view) {
         this.inventory = inventory;
         this.view = view;
         ascendingSort = new boolean[view.getTable().getColumnCount()];
         Arrays.fill(ascendingSort, true);
-        loadItemsFromFile("json");
+        String dataFormat = showDataFormatSelectionDialog();
+        loadItemsFromFile(dataFormat);
         setupView();
     }
 
-
+    private String showDataFormatSelectionDialog() {
+        Object[] options = {"JSON", "CSV"};
+        int choice = JOptionPane.showOptionDialog(null,
+                "Vyberte formát dat pro načítání:",
+                "Výběr formátu dat",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+        return choice == 0 ? "json" : "csv";
+    }
 
     private void setupView() {
         view.setItems(inventory.getItems());
@@ -81,19 +92,14 @@ public class InventoryController {
         });
         populateCategoryFilter();
     }
-
-
     // Přidání položky
     public void addItem(String name, double price, int quantity, String category) {
         Item item = new Item(name, price, quantity, category);
         inventory.addItem(item);
-        saveItemsToFile("json");
+        saveItemsToFile(showDataFormatSelectionDialog());
         view.updateTable(inventory.getItems());
-        updateCategoryFilter(); // Přidáno
+        updateCategoryFilter();
     }
-
-
-
 
     private void updateCategoryFilter() {
         Set<String> categories = new HashSet<>();
@@ -104,7 +110,6 @@ public class InventoryController {
         view.setCategoryFilter(categories);
     }
 
-
     private void applySort(int columnIndex, boolean ascending) {
         if (columnIndex != -1) {
             String columnName = view.getTable().getColumnName(columnIndex).toLowerCase();
@@ -113,54 +118,44 @@ public class InventoryController {
         }
     }
 
-
-
     private void populateCategoryFilter() {
-        Set<String> categories = new TreeSet<>(); // Změna z HashSet na TreeSet pro seřazení kategorií
-        //Použil jsem TreeSet místo HashSet, protože potřebuji,
-        // aby kategorie byly seřazeny ve vzestupném pořadí a
-        // TreeSet automaticky udržuje prvky v seřazeném stavu.
+        Set<String> categories = new TreeSet<>();
         for (Item item : inventory.getItems()) {
             categories.add(item.getCategory());
         }
 
-        view.clearCategoryFilter(); // Vyčistí stávající filtrovací seznam
-        view.addCategoryFilter("Nic nefiltruj"); // Přidá možnost "Nic nefiltruj" na první místo
+        view.clearCategoryFilter();
+        view.addCategoryFilter("Nic nefiltruj");
         for (String category : categories) {
-            view.addCategoryFilter(category); // Přidá ostatní kategorie
+            view.addCategoryFilter(category);
         }
-        view.setSelectedCategoryFilter("Nic nefiltruj"); // Nastaví "Nic nefiltruj" jako výchozí možnost
+        view.setSelectedCategoryFilter("Nic nefiltruj");
     }
-
 
     // Odebrání položky
     public void removeItem(Item item) {
         inventory.removeItem(item);
         view.updateTable(inventory.getItems());
-        saveItemsToFile("json");
-        updateCategoryFilter(); // Přidáno
+        saveItemsToFile(showDataFormatSelectionDialog());
+        updateCategoryFilter();
     }
-
-
 
     // Editace položky
     public void updateItem(Item oldItem, String name, double price, int quantity, String category) {
         Item newItem = new Item(name, price, quantity, category);
         inventory.updateItem(oldItem, newItem);
         view.updateTable(inventory.getItems());
-        saveItemsToFile("json");
-        updateCategoryFilter(); // Přidáno
+        saveItemsToFile(showDataFormatSelectionDialog());
+        updateCategoryFilter();
     }
-
 
     // Filtrování podle kategorie
     public List<Item> filterByCategory(String category) {
         if (category == null || category.equalsIgnoreCase("Nic nefiltruj")) {
-            return inventory.getItems(); // vrátí všechny položky bez filtru
+            return inventory.getItems();
         }
         return inventory.filterByCategory(category);
     }
-
 
     public void loadItemsFromFile(String format) {
         Deserializer deserializer = new Deserializer();
@@ -169,7 +164,7 @@ public class InventoryController {
             if (format.equalsIgnoreCase("json")) {
                 items = deserializer.deserializeFromJson();
             } else if (format.equalsIgnoreCase("csv")) {
-                items = deserializer.deserializeFromJson();
+                items = deserializer.deserializeFromCSV();
             } else {
                 throw new IllegalArgumentException("Unsupported file format: " + format);
             }
@@ -179,7 +174,6 @@ public class InventoryController {
             e.printStackTrace();
         }
     }
-
 
     public void saveItemsToFile(String format) {
         Serializer serializer = new Serializer();
@@ -195,6 +189,4 @@ public class InventoryController {
             e.printStackTrace();
         }
     }
-
-
 }

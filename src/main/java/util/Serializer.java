@@ -12,14 +12,20 @@ import java.util.List;
 
 public class Serializer {
 
-    private String filePath;
+    private final String jsonFilePath;
+    private final String csvFilePath;
 
     public Serializer() {
-        this.filePath = "src/main/java/data/items.json";
+        this.jsonFilePath = "src/main/java/data/items.json";
+        this.csvFilePath = "src/main/java/data/items.csv";
         try {
-            Path path = Paths.get(filePath);
-            if (Files.notExists(path)) {
-                Files.createFile(path);
+            Path jsonPath = Paths.get(jsonFilePath);
+            if (Files.notExists(jsonPath)) {
+                Files.createFile(jsonPath);
+            }
+            Path csvPath = Paths.get(csvFilePath);
+            if (Files.notExists(csvPath)) {
+                Files.createFile(csvPath);
             }
         } catch (IOException e) {
             System.out.println("Chyba při připojování k souboru: " + e.getMessage());
@@ -29,7 +35,7 @@ public class Serializer {
     public void serializeToJson(List<Item> items) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         String content = objectMapper.writeValueAsString(items);
-        Path path = Paths.get(filePath);
+        Path path = Paths.get(jsonFilePath);
         Files.writeString(path, content, StandardCharsets.UTF_8);
     }
 
@@ -46,7 +52,7 @@ public class Serializer {
             sb.append("\n");
         }
         String content = sb.toString();
-        Path path = Paths.get(filePath);
+        Path path = Paths.get(csvFilePath);
 
         Files.writeString(path, content, StandardCharsets.UTF_8);
     }

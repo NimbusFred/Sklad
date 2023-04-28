@@ -15,7 +15,6 @@ public class ShoppingCartController {
     private final Inventory inventory;
     private final ShoppingCartView view;
     private final InventoryView inventoryView;
-    private final Serializer serializer;
 
 
     public ShoppingCartController(ShoppingCart shoppingCart, Inventory inventory, ShoppingCartView view, InventoryView inventoryView) {
@@ -23,7 +22,7 @@ public class ShoppingCartController {
         this.inventory = inventory;
         this.view = view;
         this.inventoryView = inventoryView;
-        this.serializer = new Serializer();
+        Serializer serializer = new Serializer();
         setupView();
     }
 

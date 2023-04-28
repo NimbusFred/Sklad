@@ -13,11 +13,6 @@ public class Inventory {
         items = new ArrayList<>();
     }
 
-    // Přidejte tento nový konstruktor
-    public Inventory(ArrayList<Item> items) {
-        this.items = items;
-    }
-
     // Přidání položky
     public void addItem(Item item) {
         items.add(item);

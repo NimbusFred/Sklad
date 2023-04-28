@@ -6,7 +6,9 @@ public class Item {
     private int quantity;
     private String category;
 
+    // Bezparametrický konstruktor
     public Item(){}
+    // Konstruktor se všemi parametry
     public Item(String name, double price, int quantity, String category) {
         this.name = name;
         this.price = price;
@@ -48,6 +50,7 @@ public class Item {
         this.category = category;
     }
 
+    // Přepsání metody toString() pro lepší výpis objektu Item
     @Override
     public String toString() {
         return "Item{" +

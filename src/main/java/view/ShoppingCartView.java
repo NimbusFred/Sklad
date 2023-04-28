@@ -22,7 +22,14 @@ public class ShoppingCartView extends JPanel {
         setLayout(new BorderLayout());
 
         // Vytvoření tabulky
-        tableModel = new DefaultTableModel(new Object[]{"Název", "Počet"}, 0);
+        // Vytvoření tabulky
+        tableModel = new DefaultTableModel(new Object[]{"Název", "Počet"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Zakáže editaci buněk tabulky
+                return false;
+            }
+        };
         table = new JTable(tableModel);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
@@ -47,6 +54,14 @@ public class ShoppingCartView extends JPanel {
 
     }
 
+    public String getSelectedItemName() {
+        int selectedIndex = table.getSelectedRow();
+        if (selectedIndex != -1) {
+            return (String) tableModel.getValueAt(selectedIndex, 0);
+        }
+        return null;
+    }
+
     public void setCartItems(HashMap<Item, Integer> cartItems) {
         tableModel.setRowCount(0);
         for (Map.Entry<Item, Integer> entry : cartItems.entrySet()) {
@@ -56,16 +71,6 @@ public class ShoppingCartView extends JPanel {
 
     public void setTotalPrice(double totalPrice) {
         totalLabel.setText("Celková cena: " + totalPrice);
-    }
-
-    public Item getSelectedItem() {
-        int selectedIndex = table.getSelectedRow();
-        if (selectedIndex != -1) {
-            String name = (String) tableModel.getValueAt(selectedIndex, 0);
-            int quantity = (int) tableModel.getValueAt(selectedIndex, 1);
-            return new Item(name, 0, quantity, ""); // Cena a kategorie nejsou zde důležité
-        }
-        return null;
     }
 
     public void setAddButtonListener(ActionListener listener) {

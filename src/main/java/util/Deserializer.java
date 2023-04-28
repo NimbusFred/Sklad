@@ -16,11 +16,12 @@ public class Deserializer {
 
     private final String jsonFilePath;
 
-
+    // Konstruktor Deserializer
     public Deserializer() {
         this.jsonFilePath = "src/main/java/data/items.json";
         String csvFilePath = "src/main/java/data/items.csv";
         try {
+            // Zkontrolujte, zda soubory JSON a CSV existují, pokud ne, vytvořte je
             Path jsonPath = Paths.get(jsonFilePath);
             if (Files.notExists(jsonPath)) {
                 Files.createFile(jsonPath);
@@ -34,6 +35,7 @@ public class Deserializer {
         }
     }
 
+    // Metoda pro deserializaci dat ze souboru JSON
     public ArrayList<Item> deserializeFromJson() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Path path = Paths.get(jsonFilePath);
@@ -42,7 +44,7 @@ public class Deserializer {
         });
     }
 
-
+    // Metoda pro deserializaci dat ze souboru CSV
     public ArrayList<Item> deserializeFromCSV() throws IOException {
         String csvFilePath = "src/main/java/data/items.csv";
         Path path = Paths.get(csvFilePath);
@@ -50,9 +52,11 @@ public class Deserializer {
             throw new IOException("Soubor items.csv nebyl nalezen");
         }
 
+        // Načtěte všechny řádky ze souboru CSV
         List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
         ArrayList<Item> items = new ArrayList<>();
 
+        // Iterujte (projít kolekci!) přes řádky a vytvořte objekty Item z hodnot CSV
         for (String line : lines) {
             String[] fields = line.split(",");
             if (fields.length >= 4) {

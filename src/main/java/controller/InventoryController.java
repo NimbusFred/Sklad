@@ -18,6 +18,7 @@ public class InventoryController {
     private final InventoryView view;
     private final boolean[] ascendingSort;
 
+    // Konstruktor pro třídu InventoryController
     public InventoryController(Inventory inventory, InventoryView view) {
         this.inventory = inventory;
         this.view = view;
@@ -28,6 +29,7 @@ public class InventoryController {
         setupView();
     }
 
+    // Zobrazí dialog pro výběr formátu dat
     private String showDataFormatSelectionDialog() {
         Object[] options = {"JSON", "CSV"};
         int choice = JOptionPane.showOptionDialog(null,
@@ -41,6 +43,7 @@ public class InventoryController {
         return choice == 0 ? "json" : "csv";
     }
 
+    // Nastavení akcí pro tlačítka a další komponenty ve view
     private void setupView() {
         view.setItems(inventory.getItems());
         view.setAddButtonListener(e -> {
@@ -92,15 +95,8 @@ public class InventoryController {
         });
         populateCategoryFilter();
     }
-    // Přidání položky
-    public void addItem(String name, double price, int quantity, String category) {
-        Item item = new Item(name, price, quantity, category);
-        inventory.addItem(item);
-        saveItemsToFile(showDataFormatSelectionDialog());
-        view.updateTable(inventory.getItems());
-        updateCategoryFilter();
-    }
 
+    // Aktualizace filtru kategorií
     private void updateCategoryFilter() {
         Set<String> categories = new HashSet<>();
         categories.add("Nic nefiltruj");
@@ -110,6 +106,7 @@ public class InventoryController {
         view.setCategoryFilter(categories);
     }
 
+    // Řazení položek podle vybraného sloupce
     private void applySort(int columnIndex, boolean ascending) {
         if (columnIndex != -1) {
             String columnName = view.getTable().getColumnName(columnIndex).toLowerCase();
@@ -118,6 +115,7 @@ public class InventoryController {
         }
     }
 
+    // Naplnění filtru kategorií dostupnými hodnotami
     private void populateCategoryFilter() {
         Set<String> categories = new TreeSet<>();
         for (Item item : inventory.getItems()) {
@@ -130,6 +128,15 @@ public class InventoryController {
             view.addCategoryFilter(category);
         }
         view.setSelectedCategoryFilter("Nic nefiltruj");
+    }
+
+    // Přidání položky
+    public void addItem(String name, double price, int quantity, String category) {
+        Item item = new Item(name, price, quantity, category);
+        inventory.addItem(item);
+        saveItemsToFile(showDataFormatSelectionDialog());
+        view.updateTable(inventory.getItems());
+        updateCategoryFilter();
     }
 
     // Odebrání položky
@@ -157,6 +164,7 @@ public class InventoryController {
         return inventory.filterByCategory(category);
     }
 
+    // Načítání položek ze souboru
     public void loadItemsFromFile(String format) {
         Deserializer deserializer = new Deserializer();
         List<Item> items;
@@ -175,6 +183,7 @@ public class InventoryController {
         }
     }
 
+    // Ukládání položek do souboru
     public void saveItemsToFile(String format) {
         Serializer serializer = new Serializer();
         try {

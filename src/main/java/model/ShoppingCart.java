@@ -29,6 +29,14 @@ public class ShoppingCart {
         }
     }
 
+    public Item getItemByName(String name) {
+        for (Item item : cartItems.keySet()) {
+            if (item.getName().equals(name)) {
+                return item;
+            }
+        }
+        return null;
+    }
 
     // Získání celkové ceny nákupního košíku
     public double getTotalPrice() {

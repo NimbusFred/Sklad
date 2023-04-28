@@ -4,19 +4,15 @@ import model.Item;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class ItemDialog extends JDialog {
-    private Item item;
+    private final Item item;
     private boolean confirmed = false;
 
-    private JTextField nameField;
-    private JTextField priceField;
-    private JTextField quantityField;
-    private JTextField categoryField;
-    private JButton confirmButton;
-    private JButton cancelButton;
+    private final JTextField nameField;
+    private final JTextField priceField;
+    private final JTextField quantityField;
+    private final JTextField categoryField;
 
     public ItemDialog(JFrame parent, String title, Item item) {
         super(parent, title, true);
@@ -29,12 +25,13 @@ public class ItemDialog extends JDialog {
         quantityField = new JTextField(String.valueOf(item.getQuantity()));
         categoryField = new JTextField(item.getCategory());
 
-        confirmButton = new JButton("OK");
-        cancelButton = new JButton("Zrušit");
+        JButton confirmButton = new JButton("OK");
+        JButton cancelButton = new JButton("Zrušit");
 
-        confirmButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        confirmButton.addActionListener(e -> {
+            if (nameField.getText().isEmpty() || priceField.getText().isEmpty() || quantityField.getText().isEmpty() || categoryField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(ItemDialog.this, "Prosím vyplňte všechna pole.", "Chyba", JOptionPane.ERROR_MESSAGE);
+            } else {
                 confirmed = true;
                 item.setName(nameField.getText());
                 item.setPrice(Double.parseDouble(priceField.getText()));
@@ -44,12 +41,10 @@ public class ItemDialog extends JDialog {
             }
         });
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                confirmed = false;
-                dispose();
-            }
+
+        cancelButton.addActionListener(e -> {
+            confirmed = false;
+            dispose();
         });
 
         add(new JLabel("Název:"));

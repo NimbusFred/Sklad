@@ -88,7 +88,6 @@ public class InventoryView extends JPanel {
 
     public void clearCategoryFilter() {
         categoryFilter.removeAllItems();
-        categoryFilter.addItem("Všechny");
     }
     public void enableItem(Item item) {
         int rowIndex = itemList.indexOf(item);

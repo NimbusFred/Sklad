@@ -70,7 +70,7 @@ public class Inventory {
         if (index != -1) {
             // Zkontroluje, zda je množství položky v inventáři větší nebo rovno požadovanému množství
             // a zároveň větší než 1
-            return items.get(index).getQuantity() >= quantity && quantity > 1;
+            return items.get(index).getQuantity() >= quantity && quantity >= 1;
         }
         return false;
     }

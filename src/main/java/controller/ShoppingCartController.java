@@ -102,7 +102,6 @@ public class ShoppingCartController {
         }
     }
 
-
     // Tisk faktury
     public void printInvoice() {
         System.out.println("===== Faktura =====");
